@@ -131,9 +131,11 @@ BrowserViz = function(portRange, host="localhost", title="BrowserViz", quiet=TRU
   obj <- .BrowserViz(uri=uri, websocketConnection=wsCon, port=actualPort, quiet=quiet)
 
   totalWait <- 0.0
+  maxWaitPermitted <- 10.0
   
   while (!ready(obj)){
      totalWait <- totalWait + sleepTime
+     stopifnot(totalWait < maxWaitPermitted)
      if(!obj@quiet)
         message(sprintf ("BrowserViz websocket not ready, waiting %6.2f seconds", sleepTime));
      Sys.sleep(sleepTime)
