@@ -26,7 +26,7 @@
 // -- some very simple browser window operations
 //    getBrowserInfo, getWindowTitle, setWindowTitle, getWindowSize
 //
-// 
+//
 //----------------------------------------------------------------------------------------------------
 var BrowserViz = (function () {
 
@@ -63,7 +63,7 @@ function setupSocket(socket)
   catch(exception) {
     console.log("Error: " + exception);
     }
- 
+
   return(socket);
 
 } // setupSocket
@@ -82,10 +82,10 @@ function getSocketConnectedFunctions()
 //----------------------------------------------------------------------------------------------------
 function setupBasicMessageHandlers()
 {
-  addMessageHandler("ready", ready)   
+  addMessageHandler("ready", ready)
   addMessageHandler("getBrowserInfo", getBrowserInfo)
-  addMessageHandler("getWindowTitle", getWindowTitle)   
-  addMessageHandler("setWindowTitle", setWindowTitle)   
+  addMessageHandler("getWindowTitle", getWindowTitle)
+  addMessageHandler("setWindowTitle", setWindowTitle)
   addMessageHandler("getWindowSize",  getWindowSize)
 
 } // setupBasicMessageHandlers
@@ -145,13 +145,13 @@ function addMessageHandler(cmd, func)
   else{
      dispatchOptions[cmd] = [func]
      }
-  
+
 } // addMessageHandler
 //----------------------------------------------------------------------------------------------------
 function getRegisteredHandlers()
 {
    return(Object.keys(dispatchOptions));
-  
+
 } // getRegisteredHandlers
 //----------------------------------------------------------------------------------------------------
 function dispatchMessage(msg)
@@ -161,7 +161,7 @@ function dispatchMessage(msg)
    var status = msg.status;
 
    if(Object.keys(dispatchOptions).indexOf(cmd) == -1){
-      console.log("unrecognized socket request: " + msg.cmd);
+      console.log("unrecognized command in websocket message: " + msg.cmd);
       }
    else{
      var funcs = dispatchOptions[cmd];
@@ -196,9 +196,9 @@ function intersectionOfArrays(a, b)
 //----------------------------------------------------------------------------------------------------
 function start()
 {
-  console.log("=== starting bv.start");   
+  console.log("=== starting bv.start");
   $(document).ready(runOnDocumentReadyFunctions);
-  console.log("=== starting bv.start");   
+  console.log("=== starting bv.start");
 
 }  // start
 //----------------------------------------------------------------------------------------------------
@@ -247,7 +247,7 @@ function getWindowSize(msg)
 {
    var width = $(window).width()
    var height = $(window).height()
-   return_msg = {cmd: msg.callback, status: "success", 
+   return_msg = {cmd: msg.callback, status: "success",
                  callback: "", payload: JSON.stringify({width:width, height: height})};
    send(return_msg);
 

@@ -125,3 +125,27 @@ testRunOutOfPorts <- function()
 
 } # testRunOutOfPorts
 #--------------------------------------------------------------------------------
+test_roundTripTest <- function()
+{
+   print("--- test_roundTripTest")
+   app <- BrowserViz(PORT_RANGE)
+   checkTrue(ready(app))
+
+   data <- 99
+   data.returned <- fromJSON(roundTripTest(app, data))
+   checkEquals(data, data.returned)
+
+   data <- list(lowercase=letters, uppercase=LETTERS)
+   data.returned <- fromJSON(roundTripTest(app, data))
+   checkEquals(data, data.returned)
+
+   data <- matrix(1:100, nrow=10)
+   data.returned <- fromJSON(roundTripTest(app, data))
+   checkEquals(data, data.returned)
+
+   data <- matrix(1:10000, nrow=10)
+   data.returned <- fromJSON(roundTripTest(app, data))
+   checkEquals(data, data.returned)
+
+} # test_rountTripTest
+#--------------------------------------------------------------------------------

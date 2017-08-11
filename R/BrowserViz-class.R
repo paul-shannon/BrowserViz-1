@@ -1,13 +1,12 @@
 .getBrowser <- function()
 {
-    #if(.Platform$OS.type == "windows")
-    #    stop("BrowserViz not (yet) supported on Windows.")
+    if(.Platform$OS.type == "windows")
+        stop("BrowserViz not (yet) supported on Windows.")
     if(nchar(Sys.getenv("BROWSERVIZ_BROWSER")))
         Sys.getenv("BROWSERVIZ_BROWSER")
     else
         getOption("browser")
 }
-
 #----------------------------------------------------------------------------------------------------
 printf <- function(...) print(noquote(sprintf(...)))
 #----------------------------------------------------------------------------------------------------
@@ -75,6 +74,7 @@ setGeneric('closeWebSocket',          signature='obj', function(obj) standardGen
 setGeneric('getBrowserWindowTitle',   signature='obj', function(obj) standardGeneric('getBrowserWindowTitle'))
 setGeneric('setBrowserWindowTitle',   signature='obj', function(obj, newTitle, proclaim=FALSE)
                                                                      standardGeneric('setBrowserWindowTitle'))
+setGeneric('roundTripTest',           signature='obj', function (obj, ...) standardGeneric('roundTripTest'))
 setGeneric('getBrowserWindowSize',    signature='obj', function(obj) standardGeneric('getBrowserWindowSize'))
 #----------------------------------------------------------------------------------------------------
 setupMessageHandlers <- function()
@@ -289,10 +289,10 @@ setMethod('getBrowserResponse', 'BrowserVizClass',
       if(nchar(qs) > 0){
          if(!quiet) print("--- bv$call, about to call dynamically assigned queryProcessor");
          fields <- ls(req)
-         #for(field in fields){
-         #   printf("---- request field: %s", field)
-         #   print(req[[field]]);
-         #   }
+         for(field in fields){
+            printf("---- request field: %s", field)
+            print(req[[field]]);
+            }
          queryProcessorFunction <- BrowserViz.state[["httpQueryProcessingFunction"]]
          if(!is.null(queryProcessorFunction))
            body <- queryProcessorFunction(qs)
@@ -392,6 +392,18 @@ setMethod('getBrowserInfo', 'BrowserVizClass',
 
   function (obj) {
      send(obj, list(cmd="getBrowserInfo", callback="handleResponse", status="request", payload=""))
+     while (!browserResponseReady(obj)){
+        Sys.sleep(.1)
+        }
+     getBrowserResponse(obj);
+     })
+
+#--------------------------------------------------------------------------------
+setMethod('roundTripTest', 'BrowserVizClass',
+
+  function (obj, ...) {
+     payload <- toJSON(...)
+     send(obj, list(cmd="roundTripTest", callback="handleResponse", status="request", payload=payload))
      while (!browserResponseReady(obj)){
         Sys.sleep(.1)
         }

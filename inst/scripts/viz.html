@@ -119,6 +119,15 @@ function setWindowTitle(msg)
 
 } // setWindowTitle
 //----------------------------------------------------------------------------------------------------
+function displayText(msg)
+{
+   var html = " &nbsp; <h2 style='margin:50px;'>" + msg.payload + " </h2>";
+   document.getElementById("browserVizDiv").innerHTML = msg.payload
+
+   send({cmd: msg.callback, status: "success", callback: "", payload: window.document.title});
+
+} // displayText
+//----------------------------------------------------------------------------------------------------
 function getWindowSize(msg)
 {
    var width = $(window).width()
@@ -129,6 +138,16 @@ function getWindowSize(msg)
 
 } // getWindowSize
 //----------------------------------------------------------------------------------------------------
+function returnPayloadAsIs(msg)
+{
+   var s = "received json data structure of " + msg.payload.length + " characters";
+   var html = " &nbsp; <h2 style='margin:50px;'>" + s + " </h2>";
+   document.getElementById("browserVizDiv").innerHTML = html;
+
+   send({cmd: msg.callback, status: "success", callback: "", payload: msg.payload});
+
+} // returnPayloadAsIs
+//----------------------------------------------------------------------------------------------------
 $(document).ready(function() {
 
    console.log("viz.html document ready");
@@ -137,6 +156,7 @@ $(document).ready(function() {
    addMessageHandler("getWindowTitle", getWindowTitle)
    addMessageHandler("setWindowTitle", setWindowTitle)
    addMessageHandler("getWindowSize",  getWindowSize)
+   addMessageHandler("roundTripTest",  returnPayloadAsIs)
 
    console.log("==== document ready");
    browserVizDiv = $("#browserVizDiv")
