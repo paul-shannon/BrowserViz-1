@@ -1,7 +1,7 @@
 .getBrowser <- function()
 {
-    if(.Platform$OS.type == "windows")
-        stop("BrowserViz not (yet) supported on Windows.")
+    #if(.Platform$OS.type == "windows")
+    #    stop("BrowserViz not (yet) supported on Windows.")
     if(nchar(Sys.getenv("BROWSERVIZ_BROWSER")))
         Sys.getenv("BROWSERVIZ_BROWSER")
     else
@@ -289,10 +289,10 @@ setMethod('getBrowserResponse', 'BrowserVizClass',
       if(nchar(qs) > 0){
          if(!quiet) print("--- bv$call, about to call dynamically assigned queryProcessor");
          fields <- ls(req)
-         for(field in fields){
-            printf("---- request field: %s", field)
-            print(req[[field]]);
-            }
+         #for(field in fields){
+         #   printf("---- request field: %s", field)
+         #   print(req[[field]]);
+         #   }
          queryProcessorFunction <- BrowserViz.state[["httpQueryProcessingFunction"]]
          if(!is.null(queryProcessorFunction))
            body <- queryProcessorFunction(qs)
