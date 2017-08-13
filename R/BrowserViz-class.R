@@ -244,13 +244,13 @@ setMethod('ready', 'BrowserVizClass',
      send(obj, list(cmd="ready", callback="handleResponse", status="request", payload=""))
 
      while (!browserResponseReady(obj)){
-        printf("waiting in BrowserViz.ready, browserResponseReady not yet true");
+        if(!obj@quiet) printf("waiting in BrowserViz.ready, browserResponseReady not yet true");
         Sys.sleep(sleepInterval)
         sleepIntervalCount <- sleepIntervalCount + 1
         }
 
-     printf("browserResponseReady now true, after %d sleepInterval/s of %f",
-            sleepIntervalCount, sleepInterval);
+     if(!obj@quiet) printf("browserResponseReady now true, after %d sleepInterval/s of %f",
+                           sleepIntervalCount, sleepInterval);
      getBrowserResponse(obj);
      return(TRUE);
      })
@@ -290,8 +290,8 @@ setMethod('getBrowserResponse', 'BrowserVizClass',
          if(!quiet) print("--- bv$call, about to call dynamically assigned queryProcessor");
          fields <- ls(req)
          for(field in fields){
-            printf("---- request field: %s", field)
-            print(req[[field]]);
+            #printf("---- request field: %s", field)
+            #print(req[[field]]);
             }
          queryProcessorFunction <- BrowserViz.state[["httpQueryProcessingFunction"]]
          if(!is.null(queryProcessorFunction))
