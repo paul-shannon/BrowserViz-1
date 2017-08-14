@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>~/s/examples/R/websockets/httpuv/daemonEcho1</title>
+
+<script>
+document.addEventListener("DOMContentLoaded", function(event) {
+   var msgDiv = document.getElementById("outputDiv");
+   document.getElementById("browserInfoDiv").innerHTML = "<b>browser: </b>" + navigator.userAgent;
+   var socketURI = window.location.href.replace("http://", "ws://");
+   var ws = new WebSocket(socketURI);
+   ws.onmessage = function(msgRaw) {
+      console.log(msgRaw.data);
+      var msg = JSON.parse(msgRaw.data)
+      switch(msg.cmd){
+         case "RVersion":
+            document.getElementById("RVersionDiv").innerHTML = "<b>R: </b>" + msg.payload;
+            ws.send("RVersion info received and displayed");
+            break;
+         case "httpuvVersion":
+            document.getElementById("httpuvVersionDiv").innerHTML = "<b>httpuv: </b>" + msg.payload;
+            ws.send("httpuvVersion info received and displayed");
+            break;
+         case "toUpper":
+            var incomingText = msg.payload
+            var outgoingText = incomingText.toUpperCase()
+            msgDiv.innerHTML = "<b>received:</b> " + incomingText + "<br><b>returning: </b> " + outgoingText;
+            console.log(incomingText);
+            console.log(outgoingText)
+            ws.send(outgoingText);
+	    break;
+	 case "roundTrip":
+            var incomingObject = msg.payload;
+	    var outgoingText = JSON.stringify(incomingObject);
+            msgDiv.innerHTML = "<b>round trip: </b> returning " + outgoingText.length + " characters";
+	    ws.send(outgoingText);
+	    break;
+	 default:
+	    msgDiv.innerHTML = "unrecognized cmd received from R: " + msg.cmd;
+         } // switch
+
+     } // on.message
+  }); // addEventListener
+
+</script>
+
+</head>
+
+<body>
+<div id="browserInfoDiv"></div>
+<div id="RVersionDiv"></div>
+<div id="httpuvVersionDiv"></div>
+<div id="outputDiv"></div>
+</body>
+
+</html>
