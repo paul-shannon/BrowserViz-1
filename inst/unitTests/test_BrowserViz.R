@@ -11,6 +11,7 @@ runTests <- function()
   testWindowTitle();
   testGetWindowSize();
   testRunOutOfPorts();
+  testRoundTrips()
 
 } # runTests
 #--------------------------------------------------------------------------------
@@ -125,9 +126,9 @@ testRunOutOfPorts <- function()
 
 } # testRunOutOfPorts
 #--------------------------------------------------------------------------------
-test_roundTripTest <- function()
+test_roundTrips <- function()
 {
-   print("--- test_roundTripTest")
+   print("--- test_roundTrips")
    app <- BrowserViz(PORT_RANGE)
    checkTrue(ready(app))
 
@@ -147,5 +148,5 @@ test_roundTripTest <- function()
    data.returned <- fromJSON(roundTripTest(app, data))
    checkEquals(data, data.returned)
 
-} # test_rountTripTest
+} # test_rountTrips
 #--------------------------------------------------------------------------------
