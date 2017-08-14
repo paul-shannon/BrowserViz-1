@@ -16,7 +16,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
          case "RVersion":
             document.getElementById("RVersionDiv").innerHTML = "<b>R: </b>" + msg.payload;
             ws.send("RVersion info received and displayed");
-            break;
+
          case "httpuvVersion":
             document.getElementById("httpuvVersionDiv").innerHTML = "<b>httpuv: </b>" + msg.payload;
             ws.send("httpuvVersion info received and displayed");
