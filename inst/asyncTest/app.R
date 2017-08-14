@@ -73,7 +73,7 @@ demo <- function()
    Sys.sleep(2)
    mtx.returned <- fromJSON(.messageFromBrowser)
    stopifnot(dim(mtx.returned) == c(30,30))
-   printf("success")
+   print("success")
 
 } # demo
 #--------------------------------------------------------------------------------
