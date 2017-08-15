@@ -174,7 +174,7 @@ BrowserViz = function(portRange, host="localhost", title="BrowserViz", quiet=TRU
      if(port > max(portRange))
         done <- TRUE
      else
-        wsID <- tryCatch(startDaemonizedServer("0.0.0.0", port, wsCon),
+        wsID <- tryCatch(startDaemonizedServer("127.0.0.1", port, wsCon),
                         error=function(m){sprintf("port not available: %d", port)})
      if(.validWebSocketID(wsID))
         done <- TRUE
@@ -267,7 +267,7 @@ setMethod('getBrowserResponse', 'BrowserVizClass',
 
   function (obj) {
     if(!obj@quiet){
-       message(sprintf("BrowserViz getBrowserResponse: %s", status$result))
+       message(sprintf("BrowserViz getBrowserResponse, length %d", length(status$result)))
        }
     return(status$result)
     })
@@ -314,7 +314,7 @@ setMethod('getBrowserResponse', 'BrowserVizClass',
    wsCon$onWSOpen = function(ws) {
       if(!quiet)
          print("BrowserViz..setupWebSocketHandlers, wsCon$onWSOpen");
-      wsCon$ws <- ws
+      wsCon$ws <- ws   # this provides later access (eg wsCon$ws$send) to crucial functions
       ws$onMessage(function(binary, rawMessage) {
          if(!quiet) print("BrowserViz..setupWebSocketHandlers, onMessage ");
          message <- as.list(fromJSON(rawMessage))

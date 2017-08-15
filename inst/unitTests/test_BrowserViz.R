@@ -126,10 +126,10 @@ testRunOutOfPorts <- function()
 
 } # testRunOutOfPorts
 #--------------------------------------------------------------------------------
-test_roundTrips <- function()
+testRoundTrips <- function(quiet=TRUE)
 {
    print("--- test_roundTrips")
-   app <- BrowserViz(PORT_RANGE)
+   app <- BrowserViz(PORT_RANGE, quiet=quiet)
    checkTrue(ready(app))
 
    data <- 99
@@ -147,6 +147,7 @@ test_roundTrips <- function()
    data <- matrix(1:10000, nrow=10)
    data.returned <- fromJSON(roundTripTest(app, data))
    checkEquals(data, data.returned)
+   closeWebSocket(app)
 
 } # test_rountTrips
 #--------------------------------------------------------------------------------
