@@ -142,7 +142,7 @@ BrowserViz = function(portRange, host="localhost", title="BrowserViz", quiet=TRU
   #totalWait <- 0.0
   #maxWaitPermitted <- 10000.0
 
- # while (!ready(obj)){
+  # while (!ready(obj)){
   #   totalWait <- totalWait + sleepTime
   #   stopifnot(totalWait < maxWaitPermitted)
   #   if(!obj@quiet)
@@ -150,7 +150,7 @@ BrowserViz = function(portRange, host="localhost", title="BrowserViz", quiet=TRU
   #   Sys.sleep(sleepTime)
   #   }
 
- # if(!obj@quiet)
+  # if(!obj@quiet)
   #   message(sprintf("BrowserViz websocket ready after %6.2f seconds", totalWait));
 
   obj
