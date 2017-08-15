@@ -91,6 +91,7 @@ demo <- function(portNumber=5000)
    mtx.returned <- fromJSON(.messageFromBrowser)
    stopifnot(dim(mtx.returned) == c(30,30))
    print("success")
+   stopDaemonizedServer(ws$id)
 
 } # demo
 #--------------------------------------------------------------------------------
