@@ -1,6 +1,8 @@
 library(httpuv)
 library(jsonlite)
 #--------------------------------------------------------------------------------
+printf <- function(...) print(noquote(sprintf(...)))
+#--------------------------------------------------------------------------------
 createWebSocket <- function(port)
 {
    callFunction <- function(req) { # "call" processes http requests
@@ -57,6 +59,8 @@ displayWS <- function(ws)
 #--------------------------------------------------------------------------------
 demo <- function(portNumber=5000)
 {
+   printf("--- running demo on port %d", portNumber)
+
    ws <- createWebSocket(portNumber)
    browseURL(sprintf("http://localhost:%d", portNumber))
    ws$id <- startDaemonizedServer("127.0.0.1", portNumber, ws)
