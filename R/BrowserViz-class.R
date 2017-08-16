@@ -135,23 +135,24 @@ BrowserViz = function(portRange, host="localhost", title="BrowserViz", quiet=TRU
 
   BrowserViz.state[["httpQueryProcessingFunction"]] <- httpQueryProcessingFunction
 
-  printf("sleeping 2 seconds for browser/httpuv handshake")
-  Sys.sleep(2);  # wait for the browser/httpuv handshake to complete
-  printf("sleep complete")
+  #printf("sleeping 2 seconds for browser/httpuv handshake")
+  #Sys.sleep(2);  # wait for the browser/httpuv handshake to complete
+  #printf("sleep complete")
 
-  #totalWait <- 0.0
-  #maxWaitPermitted <- 10000.0
+  totalWait <- 0.0
+  maxWaitPermitted <- 10000.0
+  sleepTime <- 2
 
-  # while (!ready(obj)){
-  #   totalWait <- totalWait + sleepTime
-  #   stopifnot(totalWait < maxWaitPermitted)
-  #   if(!obj@quiet)
-  #      message(sprintf ("BrowserViz websocket not ready, waiting %6.2f seconds", sleepTime));
-  #   Sys.sleep(sleepTime)
-  #   }
+  while (!ready(obj)){
+    totalWait <- totalWait + sleepTime
+    stopifnot(totalWait < maxWaitPermitted)
+    if(!obj@quiet)
+       message(sprintf ("BrowserViz websocket not ready, waiting %6.2f seconds", sleepTime));
+    Sys.sleep(sleepTime)
+    }
 
-  # if(!obj@quiet)
-  #   message(sprintf("BrowserViz websocket ready after %6.2f seconds", totalWait));
+  if(!obj@quiet)
+    message(sprintf("BrowserViz websocket ready after %6.2f seconds", totalWait));
 
   obj
 
