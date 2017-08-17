@@ -143,7 +143,7 @@ BrowserViz = function(portRange, host="localhost", title="BrowserViz", quiet=TRU
   maxWaitPermitted <- 10000.0
   sleepTime <- 2
 
-  while (!ready(obj)){
+  while (is.null(wsCon$ws)){   # becomes non-null when handshake is established
     totalWait <- totalWait + sleepTime
     stopifnot(totalWait < maxWaitPermitted)
     if(!obj@quiet)
