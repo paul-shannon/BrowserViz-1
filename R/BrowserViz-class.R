@@ -151,8 +151,10 @@ BrowserViz = function(portRange, host="localhost", title="BrowserViz", quiet=TRU
     Sys.sleep(sleepTime)
     }
 
-  if(!obj@quiet)
-    message(sprintf("BrowserViz websocket ready after %6.2f seconds", totalWait));
+  if(!obj@quiet){
+     message(sprintf("BrowserViz websocket ready after %6.2f seconds", totalWait));
+     message(sprintf("about to return BrowserViz object"));
+     }
 
   obj
 
@@ -179,7 +181,7 @@ BrowserViz = function(portRange, host="localhost", title="BrowserViz", quiet=TRU
         done <- TRUE
      else
         wsID <- tryCatch(startDaemonizedServer("127.0.0.1", port, wsCon),
-                        error=function(m){sprintf("port not available: %d", port)})
+                        error=function(m){sprintf("port not available: %s", port)})
      if(.validWebSocketID(wsID))
         done <- TRUE
      else
