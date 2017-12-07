@@ -181,7 +181,7 @@ BrowserViz = function(portRange, host="localhost", title="BrowserViz", quiet=TRU
         done <- TRUE
      else
         wsID <- tryCatch(startDaemonizedServer("127.0.0.1", port, wsCon),
-                        error=function(m){sprintf("port not available: %s", port)})
+                        error=function(m){sprintf("port not available: %d", port)})
      if(.validWebSocketID(wsID))
         done <- TRUE
      else
