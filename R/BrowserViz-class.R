@@ -437,7 +437,7 @@ setMethod('setBrowserWindowTitle', 'BrowserVizClass',
      while (!browserResponseReady(obj)){
         Sys.sleep(.1)
         }
-     getBrowserResponse(obj)
+     invisible(getBrowserResponse(obj))
      })
 
 #----------------------------------------------------------------------------------------------------
