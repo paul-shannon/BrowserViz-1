@@ -92,7 +92,7 @@ setupMessageHandlers <- function()
 # the BrowserTable class, which uses http in an ajax-ish way to pass pages of a possibly
 # very large data.frame to the browser for incremental display.
 #
-BrowserViz = function(portRange, host="localhost", title="BrowserViz", quiet=TRUE, browserFile=NA,
+BrowserViz = function(portRange, host="localhost", title="BrowserViz", quiet=FALSE, browserFile=NA,
                       httpQueryProcessingFunction=NULL)
 {
   if(is.na(browserFile))
