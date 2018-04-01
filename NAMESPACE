@@ -9,6 +9,7 @@ exportMethods (
    closeWebSocket,
    port,
    roundTripTest,
+   displayHTMLInDiv,
    getBrowserWindowTitle,
    setBrowserWindowTitle,
    getBrowserWindowSize
@@ -23,6 +24,5 @@ export(
 importClassesFrom(methods, character, integer)
 importFrom(methods, new)
 
-import(BiocGenerics)
 import(httpuv)
 importFrom(jsonlite, fromJSON, toJSON)

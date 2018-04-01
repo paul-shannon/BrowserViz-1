@@ -1,51 +1,143 @@
 library(RUnit)
 library(BrowserViz)
 #--------------------------------------------------------------------------------
-PORT_RANGE = 7300:7320
+# specify an html/javascript file which gives this particular BrowserViz app its
+# personality, assembled by npm and webpackfrom this package's companion
+# file "github:paul-shannon/browservizjs" and these two
+#
+#  inst/browserCode/src/bvdemo.js
+#  inst/browserCode/dist/bvdemo.html-template
+#
+# the tests below exercise the base browserviz messages
+#    ready
+#    getBrowserInfo
+#    getWindowTitle
+#    setWindowTitle
+#    getWindowSize
+#    roundTripTest
+#
+#  and adds one new one, to show how new capability is added
+#
+browserVizBrowserFile <- system.file(package="BrowserViz", "browserCode", "dist", "bvdemo.html")
+PORT_RANGE <- 12111:12120   # usually defaults, but used here for more specific testing
+#--------------------------------------------------------------------------------
+# two sets of tests, useful in different contexts
+#   daily routine build tests: construct just one instance, and therefore just
+#         one browser window (tab), upon which multiple tests are run.
+#   deeper tests:  construct multiple instances, establishing that sockets
+#         can be opened and closed, that when PORT_RANGE is exhausted the
+#         app handles that gracefully
+#--------------------------------------------------------------------------------
+if(!exists("bvApp")){
+   bvApp <- BrowserViz(browserFile=browserVizBrowserFile, quiet=TRUE)
+   checkTrue(ready(bvApp))
+   }
 #--------------------------------------------------------------------------------
 runTests <- function()
 {
-  testConstructor();
-  testGetBrowserInfo();
-  testMultipleOpenCloseOnSamePort();
-  testWindowTitle();
-  testGetWindowSize();
-  testRunOutOfPorts();
-  testRoundTrips()
+  checkGetBrowserInfo();
+  checkWindowTitle();
+  checkGetWindowSize();
+  checkRoundTrips()
 
 } # runTests
 #--------------------------------------------------------------------------------
-testConstructor <- function()
+test_deeper <- function()
 {
-   print("--- testConstructor")
-   app <- BrowserViz(PORT_RANGE, quiet=FALSE);
+   checkConstructor()
+   checkMultipleOpenCloseOnSamePort();
+   # checkRunOutOfPorts();  temporarily disabled
+
+} # test_deeper
+#--------------------------------------------------------------------------------
+checkGetBrowserInfo <- function()
+{
+   print("--- checkGetBrowserInfo")
+   checkTrue(ready(bvApp))
+   userAgent <- getBrowserInfo(bvApp)
+   checkEquals(typeof(userAgent), "character")
+   checkTrue(nchar(userAgent) > 5);  # 120 on chrome 40.0.2214.115 (27 feb 2015)
+
+} # checkGetBrowserInfo
+#--------------------------------------------------------------------------------
+checkWindowTitle <- function()
+{
+   print("--- checkWindowTitle")
+   checkTrue(ready(bvApp))
+   setBrowserWindowTitle(bvApp, "new title");
+   checkEquals(getBrowserWindowTitle(bvApp), "new title")
+
+} # checkWindowTitle
+#--------------------------------------------------------------------------------
+checkGetWindowSize <- function()
+{
+   print("--- checkGetWindowSize")
+   checkTrue(ready(bvApp))
+   x <- getBrowserWindowSize(bvApp)
+   checkEquals(sort(names(x)), c("height", "width"))
+   checkTrue(all(as.integer(x) > 0))
+
+} # checkGetWindowSize
+#--------------------------------------------------------------------------------
+checkRoundTrips <- function(quiet=TRUE)
+{
+   print("--- check_roundTrips")
+   checkTrue(ready(bvApp))
+
+   data <- 99
+   json.returned <- roundTripTest(bvApp, data)
+   data.returned <- fromJSON(json.returned)
+   checkEquals(data, data.returned)
+   html <- sprintf("<h3> successful round trip of json-encoded data, length %d</h3>", nchar(json.returned))
+   displayHTMLInDiv(bvApp, html, "bvDemoDiv")
+   Sys.sleep(1)
+
+   data <- list(lowercase=letters, uppercase=LETTERS)
+   json.returned <- roundTripTest(bvApp, data)
+   data.returned <- fromJSON(json.returned)
+   checkEquals(data, data.returned)
+   html <- sprintf("<h3> successful round trip of json-encoded data, length %d</h3>", nchar(json.returned))
+   displayHTMLInDiv(bvApp, html, "bvDemoDiv")
+   Sys.sleep(1)
+
+   data <- matrix(1:100, nrow=10)
+   json.returned <- roundTripTest(bvApp, data)
+   data.returned <- fromJSON(json.returned)
+   checkEquals(data, data.returned)
+   html <- sprintf("<h3> successful round trip of json-encoded data, length %d</h3>", nchar(json.returned))
+   displayHTMLInDiv(bvApp, html, "bvDemoDiv")
+   Sys.sleep(1)
+
+   data <- matrix(1:10000, nrow=10)
+   json.returned <- roundTripTest(bvApp, data)
+   data.returned <- fromJSON(json.returned)
+   checkEquals(data, data.returned)
+   html <- sprintf("<h3> successful round trip of json-encoded data, length %d</h3>", nchar(json.returned))
+   displayHTMLInDiv(bvApp, html, "bvDemoDiv")
+   Sys.sleep(1)
+
+} # checkRoundTrips
+#--------------------------------------------------------------------------------
+checkConstructor <- function()
+{
+   print("--- checkConstructor")
+   app <- BrowserViz(portRange=PORT_RANGE, browserFile=browserVizBrowserFile, quiet=TRUE)
+
    checkTrue(ready(app))
    checkTrue(port(app) %in% PORT_RANGE)
    closeWebSocket(app)
    checkTrue(!ready(app))
 
-} # testConstructor
+} # checkConstructor
 #--------------------------------------------------------------------------------
-testGetBrowserInfo <- function()
+checkMultipleOpenCloseOnSamePort <- function()
 {
-   print("--- testGetBrowserInfo")
-   app <- BrowserViz(PORT_RANGE, quiet=FALSE);
-   checkTrue(ready(app))
-   userAgent <- getBrowserInfo(app)
-   checkEquals(typeof(userAgent), "character")
-   checkTrue(nchar(userAgent) > 5);  # 120 on chrome 40.0.2214.115 (27 feb 2015)
-   closeWebSocket(app)
-
-} # testGetBrowserInfo
-#--------------------------------------------------------------------------------
-testMultipleOpenCloseOnSamePort <- function()
-{
-   print("--- testMultipleOpenCloseOnSamePort")
+   print("--- checkMultipleOpenCloseOnSamePort")
 
    max <- 3
 
    for(i in 1:max){
-     app <- BrowserViz(PORT_RANGE[1]);
+     app <- BrowserViz(portRange=PORT_RANGE[1], browserFile=browserVizBrowserFile, quiet=TRUE)
      checkTrue(ready(app))
      #printf("app instance #%d ready on port %d", i, port(app))
      checkEquals(port(app), PORT_RANGE[1])
@@ -54,45 +146,11 @@ testMultipleOpenCloseOnSamePort <- function()
      #printf("app instance #%d closed", i)
      } # for i
 
-
-} # testMultipleOpenCloseOnSamePort
+} # checkMultipleOpenCloseOnSamePort
 #--------------------------------------------------------------------------------
-testWindowTitle <- function()
+checkRunOutOfPorts <- function()
 {
-   print("--- testWindowTitle")
-   app <- BrowserViz(PORT_RANGE)
-   checkTrue(ready(app))
-   checkEquals(getBrowserWindowTitle(app), "BrowserViz")
-   setBrowserWindowTitle(app, "new title");
-   checkEquals(getBrowserWindowTitle(app), "new title")
-
-   nextTitle <- "proclaiming new title"
-   setBrowserWindowTitle(app, nextTitle, proclaim=TRUE);
-   checkEquals(getBrowserWindowTitle(app), nextTitle);
-
-   nextTitle <- "PROCLAIMING NEW TITLE"
-   setBrowserWindowTitle(app, nextTitle, proclaim=TRUE);
-   checkEquals(getBrowserWindowTitle(app), nextTitle);
-
-   closeWebSocket(app)
-
-} # testWindowTitle
-#--------------------------------------------------------------------------------
-testGetWindowSize <- function()
-{
-   print("--- testGetWindowSize")
-   app <- BrowserViz(PORT_RANGE)
-   checkTrue(ready(app))
-   x <- getBrowserWindowSize(app)
-   checkEquals(sort(names(x)), c("height", "width"))
-   checkTrue(all(as.integer(x) > 0))
-   closeWebSocket(app)
-
-} # testGetWindowSize
-#--------------------------------------------------------------------------------
-testRunOutOfPorts <- function()
-{
-   print("--- testRunOutOfPorts")
+   print("--- checkRunOutOfPorts")
 
    max <- 3
    portRange <- PORT_RANGE[1]:(PORT_RANGE[1]+1)
@@ -124,30 +182,5 @@ testRunOutOfPorts <- function()
         } # if port(app) has meaningful value
      } # for i
 
-} # testRunOutOfPorts
-#--------------------------------------------------------------------------------
-testRoundTrips <- function(quiet=TRUE)
-{
-   print("--- test_roundTrips")
-   app <- BrowserViz(PORT_RANGE, quiet=quiet)
-   checkTrue(ready(app))
-
-   data <- 99
-   data.returned <- fromJSON(roundTripTest(app, data))
-   checkEquals(data, data.returned)
-
-   data <- list(lowercase=letters, uppercase=LETTERS)
-   data.returned <- fromJSON(roundTripTest(app, data))
-   checkEquals(data, data.returned)
-
-   data <- matrix(1:100, nrow=10)
-   data.returned <- fromJSON(roundTripTest(app, data))
-   checkEquals(data, data.returned)
-
-   data <- matrix(1:10000, nrow=10)
-   data.returned <- fromJSON(roundTripTest(app, data))
-   checkEquals(data, data.returned)
-   closeWebSocket(app)
-
-} # test_rountTrips
+} # checkRunOutOfPorts
 #--------------------------------------------------------------------------------

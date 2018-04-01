@@ -24,7 +24,7 @@ toJSON <- function(..., auto_unbox = TRUE)
 # a default html + javascript file, an example, shows how to setup the websocket, get web page
 # dimensions, set and get the browser's window  title
 
-browserVizBrowserFile <- system.file(package="BrowserViz", "scripts", "viz.html")
+#browserVizBrowserFile <- system.file(package="BrowserViz", "scripts", "viz.html")
 
 
 # this maps from incoming json commands to function calls
@@ -72,10 +72,10 @@ setGeneric('browserResponseReady',    signature='obj', function(obj) standardGen
 setGeneric('getBrowserResponse',      signature='obj', function(obj) standardGeneric('getBrowserResponse'))
 setGeneric('closeWebSocket',          signature='obj', function(obj) standardGeneric('closeWebSocket'))
 setGeneric('getBrowserWindowTitle',   signature='obj', function(obj) standardGeneric('getBrowserWindowTitle'))
-setGeneric('setBrowserWindowTitle',   signature='obj', function(obj, newTitle, proclaim=FALSE)
-                                                                     standardGeneric('setBrowserWindowTitle'))
+setGeneric('setBrowserWindowTitle',   signature='obj', function(obj, newTitle) standardGeneric('setBrowserWindowTitle'))
 setGeneric('roundTripTest',           signature='obj', function (obj, ...) standardGeneric('roundTripTest'))
 setGeneric('getBrowserWindowSize',    signature='obj', function(obj) standardGeneric('getBrowserWindowSize'))
+setGeneric('displayHTMLInDiv',        signature='obj', function(obj, htmlText, div.id) standardGeneric('displayHTMLInDiv'))
 #----------------------------------------------------------------------------------------------------
 setupMessageHandlers <- function()
 {
@@ -92,9 +92,10 @@ setupMessageHandlers <- function()
 # the BrowserTable class, which uses http in an ajax-ish way to pass pages of a possibly
 # very large data.frame to the browser for incremental display.
 #
-BrowserViz = function(portRange, host="localhost", title="BrowserViz", quiet=FALSE, browserFile=NA,
+BrowserViz = function(portRange=10000:10100, title="BrowserViz",  browserFile, quiet=FALSE,
                       httpQueryProcessingFunction=NULL)
 {
+  host <- "localhost"
   if(is.na(browserFile))
      browserFile <- browserVizBrowserFile
 
@@ -430,8 +431,8 @@ setMethod('getBrowserWindowTitle', 'BrowserVizClass',
 #----------------------------------------------------------------------------------------------------
 setMethod('setBrowserWindowTitle', 'BrowserVizClass',
 
-  function (obj, newTitle, proclaim=FALSE) {
-     payload = list(title=newTitle, proclaim=proclaim)
+  function (obj, newTitle) {
+     payload = list(title=newTitle)
      send(obj, list(cmd="setWindowTitle", callback="handleResponse", status="request",
                     payload=payload))
      while (!browserResponseReady(obj)){
@@ -449,6 +450,18 @@ setMethod('getBrowserWindowSize', 'BrowserVizClass',
         Sys.sleep(.1)
         }
      as.list(fromJSON(getBrowserResponse(obj)))
+     })
+
+#----------------------------------------------------------------------------------------------------
+setMethod('displayHTMLInDiv', 'BrowserVizClass',
+
+  function (obj, htmlText, div.id) {
+     payload = list(htmlText=htmlText, divID=div.id)
+     send(obj, list(cmd="displayHTMLInDiv", callback="handleResponse", status="request", payload=payload))
+     while (!browserResponseReady(obj)){
+        Sys.sleep(.1)
+        }
+     #as.list(fromJSON(getBrowserResponse(obj)))
      })
 
 #----------------------------------------------------------------------------------------------------
